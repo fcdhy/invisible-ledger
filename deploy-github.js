@@ -63,7 +63,7 @@ const git = (args, opts) => execFileSync('git', args, Object.assign({ cwd: dir, 
   const owner = process.env.OWNER || me.json.login;
   console.log(`  账号：${me.json.login}`);
 
-  console.log(`→ 创建仓库 ${owner}/${REPO} …`);
+  console.log(`→ 准备仓库 ${owner}/${REPO} …`);
   const create = await api('POST', '/user/repos', {
     name: REPO,
     private: PRIVATE,
@@ -72,11 +72,25 @@ const git = (args, opts) => execFileSync('git', args, Object.assign({ cwd: dir, 
     has_wiki: false,
     auto_init: false
   });
-  if (create.status === 201) console.log('  已创建');
-  else if (/already exists/i.test(create.text)) console.log('  仓库已存在，继续推送');
-  else {
-    console.error(`✗ 创建失败（HTTP ${create.status}）：${create.text.slice(0, 300)}`);
-    process.exit(1);
+  if (create.status === 201) {
+    console.log('  已创建');
+  } else if (/already exists/i.test(create.text)) {
+    console.log('  仓库已存在，继续推送');
+  } else {
+    // 建仓失败（常见于 fine-grained token 未授予 Administration 权限）
+    // 如果你已经在网页上手动建好了仓库，这里就继续往下推
+    const probe = await api('GET', `/repos/${owner}/${REPO}`);
+    if (probe.status === 200) {
+      console.log('  已在网页建好，跳过创建，继续推送');
+    } else {
+      console.error(`✗ 创建仓库失败（HTTP ${create.status}）：${create.text.slice(0, 240)}`);
+      console.error('  办法：① 在 github.com/new 手动建一个空仓库（不要勾 README），再跑一次本脚本；');
+      console.error('        ② 或给 token 加上 Administration: Read and write 权限后重跑。');
+      if (probe.status === 404) {
+        console.error(`  （探测 ${owner}/${REPO} 返回 404：仓库不存在，或该仓库不在 token 授权范围内）`);
+      }
+      process.exit(1);
+    }
   }
 
   console.log('→ 推送代码 …');
@@ -92,16 +106,23 @@ const git = (args, opts) => execFileSync('git', args, Object.assign({ cwd: dir, 
 
   // 用临时 header 推送，token 不写进 .git/config
   const auth = Buffer.from(`x-access-token:${TOKEN}`).toString('base64');
-  const pushArgs = [
-    '-c', `http.extraheader=AUTHORIZATION: basic ${auth}`,
-    'push', `https://github.com/${owner}/${REPO}.git`, `${BRANCH}:${BRANCH}`, '-f', '--quiet'
-  ];
+  const base = ['-c', `http.extraheader=AUTHORIZATION: basic ${auth}`, 'push',
+    `https://github.com/${owner}/${REPO}.git`, `${BRANCH}:${BRANCH}`];
   try {
-    git(pushArgs);
+    git(base.concat(['--quiet']));
     console.log('  推送完成');
   } catch (e) {
-    console.error('✗ 推送失败，请检查 token 是否具备 Contents: Read and write 权限');
-    process.exit(1);
+    // 目标仓库自带 README 等提交时会被拒，这时才强制覆盖（仅限你手动新建的空仓库）
+    console.log('  首次推送被拒（远端已有提交？），尝试强制推送 …');
+    try {
+      git(base.concat(['--force', '--quiet']));
+      console.log('  推送完成（已覆盖远端初始提交）');
+    } catch (e2) {
+      console.error('✗ 推送失败。常见原因：');
+      console.error('  · token 未授权这个仓库 → Edit token → Repository access 勾上它');
+      console.error('  · 缺少 Contents: Read and write 权限');
+      process.exit(1);
+    }
   }
 
   // 干净的 origin，方便你以后自己 push
