@@ -10,16 +10,26 @@
 'use strict';
 
 const { execFileSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
-const TOKEN = process.env.GH_TOKEN || process.argv[2] || '';
+const TOKEN_FILE = path.join(__dirname, '.gh-token');
+
+// token 来源优先级：环境变量 → 命令行参数 → .gh-token 文件（推荐，避免留在命令历史里）
+let TOKEN = process.env.GH_TOKEN || process.argv[2] || '';
+if (!TOKEN && fs.existsSync(TOKEN_FILE)) {
+  TOKEN = fs.readFileSync(TOKEN_FILE, 'utf8').trim();
+}
 const REPO = process.env.REPO_NAME || 'invisible-ledger';
 const PRIVATE = process.env.PRIVATE === '1';
 const BRANCH = 'main';
 const DESC = '隐形账本 · 看见每一份看不见的劳动';
 
 if (!TOKEN) {
-  console.error('✗ 缺少 Token。用法：GH_TOKEN=github_pat_xxx node deploy-github.js');
+  console.error('✗ 缺少 Token。三种给法任选其一：');
+  console.error('   1) GH_TOKEN=github_pat_xxx node deploy-github.js');
+  console.error('   2) node deploy-github.js github_pat_xxx');
+  console.error(`   3) 把 token 写进 ${TOKEN_FILE}，然后直接 node deploy-github.js`);
   process.exit(1);
 }
 
