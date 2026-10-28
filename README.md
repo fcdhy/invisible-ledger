@@ -6,6 +6,8 @@
 
 不是情绪安抚产品，是一本账。
 
+**[▶ 在线体验](https://fcdhy.github.io/invisible-ledger/)** ｜ 手机浏览器打开后可「添加到主屏幕」，像 App 一样使用；数据只存在你本机。
+
 <p align="center">
   <img src="docs/01-dict.png" width="240" alt="隐形劳动词典">
   <img src="docs/02-record.png" width="240" alt="语音转结构化数据">
@@ -104,19 +106,34 @@ npx serve .
 
 ## 部署到 GitHub Pages
 
+线上地址：**https://fcdhy.github.io/invisible-ledger/**
+
 ### 方式一：一键脚本（建仓库 + 推送 + 开 Pages）
 
 ```bash
 GH_TOKEN=github_pat_xxx node deploy-github.js
 ```
 
-Token 需要 **Contents: Read and write** 与 **Administration: Read and write**（建仓库、开 Pages 用）。脚本不会把 token 写进 `.git/config`。
+fine-grained token 需要的权限（少一个都会 403，GitHub 会在 `x-accepted-github-permissions` 响应头里写明缺哪项，脚本会直接打印出来）：
+
+| 权限 | 用途 |
+| --- | --- |
+| **Contents: Read and write** | 推送代码 |
+| **Administration: Read and write** | 创建仓库 |
+| **Pages: Read and write** | 通过 API 开启 Pages（可省，见下） |
+
+脚本不会把 token 写进 `.git/config`；也支持把 token 放进 `.gh-token`（已在 `.gitignore` 里）或直接作为参数传入。
 
 ### 方式二：手动
 
 1. 在 GitHub 网页新建仓库，把本地仓库推上去（`main` 分支）。
 2. Settings → Pages → Source 选 **Deploy from a branch** → `main` / `/ (root)`。
 3. 访问 `https://<用户名>.github.io/<仓库名>/`。
+
+### 两个实测踩过的坑
+
+- **没有 Pages 权限也能开站**：token 缺 `Pages: write` 时 API 开 Pages 会 403。此时把同一份代码推到 `gh-pages` 分支，GitHub 会自动创建 Pages 站点并以此分支为源，无需任何网页操作。
+- **Windows 上 git 报 `CRYPT_E_NO_REVOCATION_CHECK`**：这是本机 schannel 证书吊销检查不可用导致的 TLS 握手失败，不是网络不通。设置 `GIT_SSL_NO_VERIFY=true` 即可（`deploy-github.js` 会先探测，必要时自动降级）。
 
 手机上用 Safari / Chrome 打开后「添加到主屏幕」，会以独立应用形式启动（已附 `manifest.json` 与图标）。
 
