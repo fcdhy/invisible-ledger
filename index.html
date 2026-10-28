@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#FCF8F4" />
+<meta name="description" content="隐形账本：把全职妈妈与职场妈妈的隐形劳动、情绪劳动，一次性说清楚。" />
+<title>隐形账本 · 看见每一份看不见的劳动</title>
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/icon.svg" />
+<link rel="manifest" href="manifest.json" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+          <rect x="4.5" y="3.5" width="13" height="15" rx="2.6" stroke="#FFF3EC" stroke-width="1.5"/>
+          <path d="M8 8.5h6M8 12h4" stroke="#FFF3EC" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M17 7.5v9.8a1.9 1.9 0 0 1-2.6 1.8l-2.9-1.1" stroke="#F7C9B8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div style="min-width:0">
+        <h1>隐形账本</h1>
+        <p class="sub">看见每一份看不见的劳动</p>
+      </div>
+    </div>
+    <button class="rate-btn" id="rateBtn" type="button">¥40 / 时</button>
+  </header>
+
+  <!-- ============ 主体 ============ -->
+  <main id="main">
+
+    <!-- ---------- 词典 ---------- -->
+    <section class="view active" id="view-dict">
+      <div class="overview">
+        <div class="ov-label">本周 · 隐形劳动</div>
+        <div class="ov-main">
+          <span class="ov-num" id="ovHours">0.0</span>
+          <span class="ov-unit">小时 · 折合 ¥<span id="ovMoney">0</span></span>
+        </div>
+        <div class="ov-row">
+          <span>记录 <b id="ovCount">0</b> 笔</span>
+          <span>妈妈承担 <b id="ovShare">—</b></span>
+          <span>词典收录 <b>56</b> 项</span>
+        </div>
+        <div class="ov-quote" id="ovQuote">先记下第一笔，数据会替你说话。</div>
+      </div>
+
+      <div class="search-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6" stroke-linecap="round"/>
+        </svg>
+        <input id="searchInput" type="search" placeholder="搜一件事：纸巾、婆媳、缴费、水壶…" autocomplete="off" />
+      </div>
+
+      <div class="chips" id="chips"></div>
+      <div class="dict-meta">
+        <span id="dictCount">共 56 项</span>
+        <span>按心理负荷 ★ 排序</span>
+      </div>
+      <div id="dictList"></div>
+    </section>
+
+    <!-- ---------- 记录 ---------- -->
+    <section class="view" id="view-record">
+      <div class="panel">
+        <p class="panel-title">说一句今天发生了什么</p>
+        <textarea id="voiceInput" placeholder="例：今天气死我了，我刚安抚完娃，又去提醒他爸明天要交幼儿园手工作业。"></textarea>
+        <div class="rec-actions">
+          <button class="btn btn-mic" id="micBtn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3" stroke-linecap="round"/>
+            </svg>
+            语音
+          </button>
+          <button class="btn btn-primary" id="parseBtn" type="button">智能拆解</button>
+        </div>
+        <div class="hint-row">
+          <p class="hint">不评价、不安慰、不建议 —— 只把这句话拆成可计量的结构。</p>
+          <button class="link-mini" id="sampleBtn" type="button">填入示例</button>
+        </div>
+      </div>
+
+      <div id="parseOut"></div>
+
+      <div class="panel" style="margin-top:12px">
+        <p class="panel-title">今日记录 <span id="todayCount" style="color:#B3A297;letter-spacing:0"></span></p>
+        <ul class="rec-list" id="todayList"></ul>
+        <div class="empty" id="todayEmpty">
+          <span class="big">◌</span>
+          还没有记录。试试上面的示例，或从词典里点「记一笔」。
+          <div style="margin-top:12px">
+            <button class="mini-btn" id="demoBtn" type="button">载入一周示例数据</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- 周报 ---------- -->
+    <section class="view" id="view-report">
+      <div class="week-switch">
+        <button class="active" data-week="0" type="button">本周</button>
+        <button data-week="1" type="button">上周</button>
+      </div>
+      <div id="reportBody"></div>
+    </section>
+
+    <!-- ---------- 关于 ---------- -->
+    <section class="view" id="view-about">
+      <div class="about-hero">
+        <div class="mark-lg" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <rect x="4.5" y="3.5" width="13" height="15" rx="2.6" stroke="#FFF3EC" stroke-width="1.4"/>
+            <path d="M8 8.5h6M8 12h4" stroke="#FFF3EC" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M17 7.5v9.8a1.9 1.9 0 0 1-2.6 1.8l-2.9-1.1" stroke="#F7C9B8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2>隐形账本</h2>
+        <p>INVISIBLE LEDGER · v1.0</p>
+      </div>
+
+      <div class="about-card">
+        <h4>为什么要有这本账</h4>
+        <p>家里的活分两种：一种做得完，一种做不完。买纸巾看得见，记住"纸巾快没了"看不见；带孩子看得见，提前三天查好疫苗放号时间看不见。后者从不进入任何统计，却持续消耗同一个人。</p>
+        <p>这本账只做一件事：把看不见的部分，写成条目、时长和金额。</p>
+      </div>
+
+      <div class="about-card">
+        <h4>四个抽屉</h4>
+        <ul>
+          <li><b>统筹类</b>：让家庭这台机器按时运转（排期、比价、派活与跟进）</li>
+          <li><b>情绪类</b>：接住每个人的情绪（安抚、缓冲、维持气氛）</li>
+          <li><b>记忆类</b>：全家的外部硬盘（缴费日、过敏史、东西放哪）</li>
+          <li><b>补救类</b>：兜住所有漏下来的事（送水壶、发现洗手液用完）</li>
+        </ul>
+        <p style="margin-top:8px">每项都标了 <b>心理负荷指数（1–5★）</b>：占用的不是时间，是脑子里的后台进程。</p>
+      </div>
+
+      <div class="about-card">
+        <h4>怎么算钱</h4>
+        <p>折算标准默认 <code>¥40 / 小时</code>，参考家政服务时薪。可在右上角修改。金额不是要谁付钱，而是给"没有价格的时间"一个可比较的单位。</p>
+      </div>
+
+      <div class="about-card">
+        <h4>关于数据</h4>
+        <p>所有记录只存在这台设备的浏览器本地存储（localStorage），不上传、不联网、不需要登录。清除浏览器数据会一并清除记录。</p>
+        <p>语音输入使用浏览器自带的语音识别能力，是否上传音频由浏览器决定，本应用不接触原始音频。</p>
+      </div>
+
+      <div class="about-card">
+        <h4>一句话免责</h4>
+        <p>本工具不是心理咨询，也不是家庭调解。它只提供结构，不提供安慰。</p>
+      </div>
+
+      <div class="about-card" style="text-align:center">
+        <button class="btn btn-ghost" id="clearBtn" type="button" style="font-size:12px;color:#A8543C">清空全部本地记录</button>
+      </div>
+
+      <footer class="site-footer">
+        © 2026 隐形账本 · 保留所有权利
+        <span class="ln">蓝诺UFO李然</span>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- ============ 底部导航 ============ -->
+  <nav class="tabbar" id="tabbar">
+    <button class="active" data-view="dict" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15.5H6.5A2.5 2.5 0 0 0 4 21z"/>
+        <path d="M4 18.5A2.5 2.5 0 0 0 6.5 21H19"/>
+      </svg>
+      <span>词典</span>
+    </button>
+    <button data-view="record" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 4.5v15M4.5 12h15"/>
+      </svg>
+      <span>记录</span>
+    </button>
+    <button data-view="report" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 20V10M12 20V4M19 20v-7"/>
+      </svg>
+      <span>周报</span>
+    </button>
+    <button data-view="about" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M12 11v5.5M12 8.2v.1"/>
+      </svg>
+      <span>关于</span>
+    </button>
+  </nav>
+</div>
+
+<!-- 设置弹层 -->
+<div class="sheet-mask" id="mask"></div>
+<div class="sheet" id="sheet">
+  <h3>折算设置</h3>
+  <p class="sub">金额不是要谁付钱，是给没有价格的时间一个单位。</p>
+  <div class="row">
+    <div class="field">
+      <label>家政时薪（元 / 小时）</label>
+      <input id="rateInput" type="number" min="1" step="1" inputmode="numeric" />
+    </div>
+    <div class="field">
+      <label>你的称呼</label>
+      <input id="nameInput" type="text" placeholder="妈妈" />
+    </div>
+  </div>
+  <button class="btn btn-primary" id="saveSettings" type="button" style="width:100%;justify-content:center">保存</button>
+</div>
+
+<div id="toast"></div>
+
+<script src="assets/dictionary.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

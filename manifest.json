@@ -1,0 +1,21 @@
+{
+  "name": "隐形账本 · 看见每一份看不见的劳动",
+  "short_name": "隐形账本",
+  "description": "把全职妈妈与职场妈妈的隐形劳动、情绪劳动，写成条目、时长和金额。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FCF8F4",
+  "theme_color": "#C4674F",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
