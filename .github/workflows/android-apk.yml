@@ -7,6 +7,7 @@ on:
     paths:
       - 'android/**'
       - 'index.html'
+      - 'privacy.html'
       - 'manifest.json'
       - 'assets/**'
       - '.github/workflows/android-apk.yml'
@@ -37,6 +38,7 @@ jobs:
           rm -rf "$DEST"
           mkdir -p "$DEST"
           cp index.html "$DEST/"
+          cp privacy.html "$DEST/"
           cp manifest.json "$DEST/"
           cp -r assets "$DEST/assets"
           echo "bundled files:"

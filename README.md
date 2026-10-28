@@ -10,6 +10,8 @@
 
 **[⬇ 下载安卓 APK](https://github.com/fcdhy/invisible-ledger/releases/latest/download/invisible-ledger.apk)** ｜ 103KB，网页已内置，断网可用。安装时允许「安装未知来源应用」；若提示风险，选「仍要安装」。
 
+隐私政策：[privacy.html](https://fcdhy.github.io/invisible-ledger/privacy.html)（应用内「关于」也有入口）
+
 <p align="center">
   <img src="docs/01-dict.png" width="240" alt="隐形劳动词典">
   <img src="docs/02-record.png" width="240" alt="语音转结构化数据">

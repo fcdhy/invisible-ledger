@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>隐私政策 · 隐形账本</title>
+<meta name="description" content="隐形账本的隐私政策：不收集个人信息，数据只存在你的设备上。">
+<style>
+  :root {
+    --cream: #FCF8F4; --paper: #FFFFFF; --ink: #2E2723; --ink-2: #5C4B43;
+    --muted: #9C8B80; --line: #EFE5DC; --clay: #A8543C;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--cream); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px; line-height: 1.85; -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 34px 22px 70px; }
+  h1 {
+    font-family: "Songti SC", "Noto Serif CJK SC", Georgia, serif;
+    font-size: 25px; font-weight: 600; letter-spacing: .5px; margin: 0 0 6px;
+  }
+  .meta { color: var(--muted); font-size: 12.5px; margin-bottom: 26px; }
+  h2 {
+    font-size: 16px; font-weight: 700; margin: 30px 0 10px;
+    padding-left: 11px; border-left: 3px solid var(--clay); line-height: 1.5;
+  }
+  p { margin: 9px 0; color: var(--ink-2); }
+  ul { margin: 9px 0; padding-left: 20px; color: var(--ink-2); }
+  li { margin: 5px 0; }
+  .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px 18px; margin: 16px 0;
+  }
+  .hl { background: #FBF2EC; border: 1px solid #F2DED2; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--ink); font-weight: 600; background: #FAF5F0; }
+  td { color: var(--ink-2); }
+  code { background: #F6EFE8; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  a { color: var(--clay); }
+  .back {
+    display: inline-block; margin-top: 30px; font-size: 13px;
+    color: var(--muted); text-decoration: none; border-bottom: 1px dashed var(--muted);
+  }
+  footer { margin-top: 40px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>隐私政策</h1>
+  <div class="meta">适用应用：隐形账本（Invisible Ledger） · 版本 v1.0 · 生效日期：2026 年 10 月 28 日</div>
+
+  <div class="card hl">
+    <p style="margin:0"><b>一句话说明：</b>本应用不收集、不上传、不共享你的任何个人信息。所有记录只保存在你手机或浏览器本地，卸载或清除数据即彻底删除，我们这边没有任何副本。</p>
+  </div>
+
+  <h2>一、我们是谁</h2>
+  <p>隐形账本是一款帮助使用者记录和统计家庭隐形劳动（统筹、情绪、记忆、补救四类）的工具类应用，由个人开发者（署名：蓝诺UFO李然）开发并维护。本应用无需注册、无需登录，没有服务器账号体系。</p>
+
+  <h2>二、我们不收集哪些信息</h2>
+  <ul>
+    <li>不收集手机号、邮箱、姓名、身份证号等身份信息</li>
+    <li>不收集通讯录、短信、通话记录、照片、相册、文件</li>
+    <li>不收集精确或粗略地理位置</li>
+    <li>不收集设备唯一标识（IMEI、IMSI、MAC、Android ID、IDFA 等）</li>
+    <li>不接入任何统计分析、广告、崩溃上报、推送类第三方 SDK</li>
+    <li>没有账号体系，因此不存在「删除账号」流程，也不存在云端数据副本</li>
+  </ul>
+
+  <h2>三、你主动填写的记录存在哪里</h2>
+  <p>你在应用中输入的任务名称、分类、时长、心理负荷、折算金额、称呼等，全部通过浏览器的 <code>localStorage</code> / 应用私有目录的本地存储保存在<b>你自己的设备上</b>。这些数据：</p>
+  <ul>
+    <li>不会被上传到任何服务器，本应用本身不具备联网传输能力</li>
+    <li>不会与任何第三方共享</li>
+    <li>你可以随时在「关于 → 清空全部本地记录」中一键删除，或卸载应用、清除应用数据，数据即刻消失且无法恢复</li>
+  </ul>
+  <p>由于数据只存在本机，换设备或卸载重装后不会自动恢复，建议在「关于」中定期导出 JSON 备份。</p>
+
+  <h2>四、麦克风权限与语音输入</h2>
+  <p>本应用提供语音输入，用于把一段口述转成文字后拆解成结构化记录。这是本应用<b>唯一申请的敏感权限</b>。</p>
+  <table>
+    <tr><th>项目</th><th>说明</th></tr>
+    <tr>
+      <td>权限名称</td>
+      <td><code>android.permission.RECORD_AUDIO</code>（录音 / 麦克风）</td>
+    </tr>
+    <tr>
+      <td>使用场景</td>
+      <td>仅当你主动点击「语音」按钮时启动，用于一次性语音转文字；不点击不会录音，不在后台录音</td>
+    </tr>
+    <tr>
+      <td>是否可拒绝</td>
+      <td>可以。拒绝后应用其余功能完全正常，你仍可用键盘输入文字</td>
+    </tr>
+    <tr>
+      <td>音频如何处理</td>
+      <td>音频交由<b>系统自带的语音识别服务</b>处理（安卓为系统 SpeechRecognizer，网页版为浏览器语音识别能力）。该识别过程可能由你的设备厂商或浏览器厂商在其服务器上完成，具体以其隐私政策为准。<b>本应用不保存任何音频，也无法访问录音文件</b>，只接收识别后的文字结果，并直接填入输入框</td>
+    </tr>
+  </table>
+
+  <h2>五、完整权限清单</h2>
+  <table>
+    <tr><th>权限</th><th>用途</th><th>是否必需</th></tr>
+    <tr><td>RECORD_AUDIO（麦克风）</td><td>语音转文字</td><td>否，可拒绝，不影响其他功能</td></tr>
+  </table>
+  <p>本应用不申请存储、相机、位置、通讯录、短信、电话状态、悬浮窗等任何其他权限。</p>
+
+  <h2>六、未成年人保护</h2>
+  <p>本应用面向成年家庭成员使用，不针对未成年人设计，不收集任何年龄信息。若未成年人在监护人指导下使用，其数据同样只保存在本机，不会被我们获取。</p>
+
+  <h2>七、第三方服务</h2>
+  <p>本应用不集成任何第三方 SDK，不包含广告，不进行数据变现。若你通过应用商店下载，商店本身的下载与统计行为由该商店运营方负责，与本应用无关。</p>
+
+  <h2>八、你的权利</h2>
+  <ul>
+    <li><b>知情权</b>：本政策已完整说明本应用处理数据的全部方式</li>
+    <li><b>删除权</b>：应用内提供「清空全部本地记录」，或直接卸载应用</li>
+    <li><b>导出权</b>：可随时导出自己的记录为 JSON 文件</li>
+    <li><b>拒绝权</b>：可拒绝麦克风权限，仅使用文字输入</li>
+  </ul>
+
+  <h2>九、政策更新</h2>
+  <p>若本应用未来增加联网、账号、云同步等功能，本政策将同步更新并在应用内与商店页面公示，重大变更会以显著方式提示。本政策的历史版本可在本页面的代码仓库提交记录中查阅。</p>
+
+  <h2>十、联系我们</h2>
+  <p>对本政策或数据处理有任何疑问、投诉或删除请求，可通过以下方式联系开发者：</p>
+  <ul>
+    <li>邮箱：<a href="mailto:elon.li@fcdhy.com">elon.li@fcdhy.com</a></li>
+    <li>问题反馈：<a href="https://github.com/fcdhy/invisible-ledger/issues">github.com/fcdhy/invisible-ledger/issues</a></li>
+  </ul>
+  <p>我们会在 15 个工作日内答复。</p>
+
+  <a class="back" href="./index.html">← 返回应用</a>
+
+  <footer>
+    © 2026 隐形账本 · 蓝诺UFO李然<br>
+    本页面自身不加载任何第三方脚本、字体或统计代码。
+  </footer>
+
+</div>
+</body>
+</html>
