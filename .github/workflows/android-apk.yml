@@ -1,0 +1,96 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - 'index.html'
+      - 'manifest.json'
+      - 'assets/**'
+      - '.github/workflows/android-apk.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
+
+      # 把网页原样塞进 APK 的 assets/web，离线可用
+      - name: Bundle web app into assets
+        run: |
+          set -e
+          DEST=android/app/src/main/assets/web
+          rm -rf "$DEST"
+          mkdir -p "$DEST"
+          cp index.html "$DEST/"
+          cp manifest.json "$DEST/"
+          cp -r assets "$DEST/assets"
+          echo "bundled files:"
+          find "$DEST" -type f | sed "s|$DEST/||" | sort
+
+      # 仓库里已有签名密钥，直接复用；否则首次生成（换键会导致无法覆盖安装）
+      - name: Prepare signing key
+        working-directory: android/app
+        run: |
+          set -e
+          if [ -f release.keystore ]; then
+            echo "使用仓库内已有签名密钥"
+          else
+            echo "首次生成签名密钥（请把它提交回仓库，否则下次升级会签名冲突）"
+            keytool -genkeypair -v \
+              -keystore release.keystore \
+              -alias android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass android -keypass android \
+              -dname "CN=Invisible Ledger, OU=Personal, O=Personal, L=Shanghai, ST=Shanghai, C=CN"
+          fi
+          keytool -list -v -keystore release.keystore -storepass android -alias android | grep -E "SHA256|SHA1"
+
+      - name: Build release APK
+        working-directory: android
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Rename artifact
+        run: |
+          set -e
+          ls -la android/app/build/outputs/apk/release/
+          cp android/app/build/outputs/apk/release/app-release.apk invisible-ledger.apk
+          ls -la invisible-ledger.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: invisible-ledger-apk
+          path: invisible-ledger.apk
+
+      - name: Publish to Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: 隐形账本 v1.0.0
+          body: |
+            安卓安装包（WebView 版，网页已内置，**离线可用**）。
+
+            **安装方法**：下载 `invisible-ledger.apk`，在手机上点开，允许「安装未知来源应用」即可。若手机提示风险，选择「仍要安装」。
+
+            **功能**：隐形劳动词典（56 项）、一句话转结构化数据、家庭隐形劳动周报。语音输入调用系统语音识别（需麦克风权限）。
+
+            **数据**：只存在手机本机，不上传任何服务器。卸载或清除应用数据会丢失记录，重要数据请先在「关于 → 导出」里备份 JSON。
+
+            © 2026 隐形账本 · 蓝诺UFO李然
+          files: invisible-ledger.apk
+          make_latest: true

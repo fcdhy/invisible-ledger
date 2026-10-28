@@ -638,8 +638,34 @@ ${off}
 
   /* ---------------- 语音 ---------------- */
   function initSpeech() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const btn = $('#micBtn');
+    const label = $('#micLabel');
+    const setState = (on) => {
+      btn.classList.toggle('rec', on);
+      if (label) label.textContent = on ? '聆听中…' : '语音';
+    };
+
+    // APK 内：WebView 不支持 Web Speech API，改用原生 SpeechRecognizer 桥
+    const native = window.AndroidVoice;
+    if (native) {
+      let listening = false;
+      window.__nativeVoiceResult = (text, isFinal) => {
+        if (typeof text === 'string' && text) $('#voiceInput').value = text;
+        if (isFinal) { listening = false; setState(false); }
+      };
+      window.__nativeVoiceError = (msg) => {
+        listening = false; setState(false);
+        toast(msg || '没有听清，再试一次或直接输入');
+      };
+      btn.addEventListener('click', () => {
+        if (listening) { try { native.stop(); } catch (e) {} listening = false; setState(false); return; }
+        listening = true; setState(true);
+        try { native.start(); } catch (e) { listening = false; setState(false); toast('麦克风无法启动'); }
+      });
+      return;
+    }
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
       btn.addEventListener('click', () => toast('当前浏览器不支持语音识别，请直接输入文字'));
       return;
@@ -650,9 +676,9 @@ ${off}
     rec.continuous = false;
     let listening = false;
 
-    rec.onstart = () => { listening = true; btn.classList.add('rec'); btn.textContent = '聆听中…'; };
-    rec.onend = () => { listening = false; btn.classList.remove('rec'); btn.textContent = '语音'; };
-    rec.onerror = () => { listening = false; btn.classList.remove('rec'); btn.textContent = '语音'; toast('没有听清，再试一次或直接输入'); };
+    rec.onstart = () => { listening = true; setState(true); };
+    rec.onend = () => { listening = false; setState(false); };
+    rec.onerror = () => { listening = false; setState(false); toast('没有听清，再试一次或直接输入'); };
     rec.onresult = (ev) => {
       let txt = '';
       for (let i = 0; i < ev.results.length; i++) txt += ev.results[i][0].transcript;
