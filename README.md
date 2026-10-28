@@ -12,6 +12,8 @@
 
 隐私政策：[privacy.html](https://fcdhy.github.io/invisible-ledger/privacy.html)（应用内「关于」也有入口）
 
+> 拟上架一加 / OPPO 应用商店，素材与逐字段填写文案见 [`store/上架材料.md`](store/上架材料.md)。
+
 <p align="center">
   <img src="docs/01-dict.png" width="240" alt="隐形劳动词典">
   <img src="docs/02-record.png" width="240" alt="语音转结构化数据">
