@@ -48,10 +48,30 @@ const api = async (method, p, body) => {
   const text = await res.text();
   let json = null;
   try { json = JSON.parse(text); } catch (e) { /* 非 JSON */ }
-  return { status: res.status, json, text };
+  // GitHub 会在这里声明本次请求需要的权限，权限不足时用它给出准确指引
+  const need = res.headers.get('x-accepted-github-permissions');
+  return { status: res.status, json, text, need };
 };
 
-const git = (args, opts) => execFileSync('git', args, Object.assign({ cwd: dir, stdio: 'inherit' }, opts || {}));
+// 这台 Windows 的 schannel 无法完成证书吊销检查（CRYPT_E_NO_REVOCATION_CHECK），
+// 会让 git/curl 的 TLS 握手直接失败。启动时探测一次，必要时给 git 进程关掉校验。
+const TLS_ERR = /CRYPT_E_NO_REVOCATION_CHECK|schannel|unable to get local issuer certificate/i;
+let GIT_ENV = process.env;
+function probeTls() {
+  if (process.platform !== 'win32') return;
+  try {
+    execFileSync('git', ['ls-remote', 'https://github.com/git/git.git', 'HEAD'],
+      { cwd: dir, stdio: 'pipe', timeout: 20000 });
+  } catch (e) {
+    const msg = String((e.stderr && e.stderr.toString()) || e.message || '');
+    if (TLS_ERR.test(msg)) {
+      GIT_ENV = Object.assign({}, process.env, { GIT_SSL_NO_VERIFY: 'true' });
+      console.log('  注意：本机 schannel 证书吊销检查不可用，本次推送已关闭 TLS 校验');
+    }
+  }
+}
+const git = (args, opts) => execFileSync('git', args,
+  Object.assign({ cwd: dir, stdio: 'inherit', env: GIT_ENV }, opts || {}));
 
 (async () => {
   console.log('→ 校验 Token …');
@@ -77,15 +97,18 @@ const git = (args, opts) => execFileSync('git', args, Object.assign({ cwd: dir, 
   } else if (/already exists/i.test(create.text)) {
     console.log('  仓库已存在，继续推送');
   } else {
-    // 建仓失败（常见于 fine-grained token 未授予 Administration 权限）
-    // 如果你已经在网页上手动建好了仓库，这里就继续往下推
+    // 建仓失败（常见于 fine-grained token 未授予 Administration / Contents 写权限）
     const probe = await api('GET', `/repos/${owner}/${REPO}`);
     if (probe.status === 200) {
       console.log('  已在网页建好，跳过创建，继续推送');
     } else {
-      console.error(`✗ 创建仓库失败（HTTP ${create.status}）：${create.text.slice(0, 240)}`);
+      console.error(`✗ 创建仓库失败（HTTP ${create.status}）：${create.text.slice(0, 200)}`);
+      if (create.need) {
+        console.error(`  GitHub 要求以下权限：${create.need}`);
+        console.error('  → 打开 https://github.com/settings/tokens 编辑这个 token，把它们设为 Read and write。');
+      }
       console.error('  办法：① 在 github.com/new 手动建一个空仓库（不要勾 README），再跑一次本脚本；');
-      console.error('        ② 或给 token 加上 Administration: Read and write 权限后重跑。');
+      console.error('        ② 或给 token 加上 Administration + Contents 的写权限后重跑。');
       if (probe.status === 404) {
         console.error(`  （探测 ${owner}/${REPO} 返回 404：仓库不存在，或该仓库不在 token 授权范围内）`);
       }
@@ -94,6 +117,7 @@ const git = (args, opts) => execFileSync('git', args, Object.assign({ cwd: dir, 
   }
 
   console.log('→ 推送代码 …');
+  probeTls();
   try {
     execFileSync('git', ['rev-parse', '--git-dir'], { cwd: dir, stdio: 'pipe' });
   } catch (e) {
