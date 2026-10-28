@@ -8,6 +8,8 @@
 
 **[▶ 在线体验](https://fcdhy.github.io/invisible-ledger/)** ｜ 手机浏览器打开后可「添加到主屏幕」，像 App 一样使用；数据只存在你本机。
 
+**[⬇ 下载安卓 APK](https://github.com/fcdhy/invisible-ledger/releases/latest/download/invisible-ledger.apk)** ｜ 103KB，网页已内置，断网可用。安装时允许「安装未知来源应用」；若提示风险，选「仍要安装」。
+
 <p align="center">
   <img src="docs/01-dict.png" width="240" alt="隐形劳动词典">
   <img src="docs/02-record.png" width="240" alt="语音转结构化数据">
@@ -104,6 +106,45 @@ python -m http.server 8000
 npx serve .
 ```
 
+## 装到手机上（三种方式）
+
+### 方式一：装 APK（真 App，可离线）
+
+下载 [invisible-ledger.apk](https://github.com/fcdhy/invisible-ledger/releases/latest/download/invisible-ledger.apk)，在手机上点开安装，允许「安装未知来源应用」。
+
+- 包名 `io.github.fcdhy.iledger`，可与旧版共存，不冲突
+- 网页整体打包在 APK 内（`assets/web`），**不联网也能用**
+- 语音输入调用系统 SpeechRecognizer（WebView 不支持 Web Speech API，故走原生桥 `AndroidVoice`）；首次使用会申请麦克风权限
+- 数据存在应用私有目录的 localStorage，卸载即清空
+- 已用 v1 + v2 签名，Android 7 到 14 均可安装
+
+### 方式二：添加到主屏幕（免安装）
+
+手机浏览器打开 https://fcdhy.github.io/invisible-ledger/ → 分享/菜单 → 「添加到主屏幕」，会以独立窗口启动，不显示浏览器地址栏。
+
+### 方式三：本地跑
+
+```bash
+python3 -m http.server 8080
+```
+
+或：
+
+```bash
+npx serve .
+```
+
+### 改完网页，APK 怎么更新
+
+推送到 `main` 后自动触发 `.github/workflows/android-apk.yml`（改了 `index.html` / `assets/**` / `android/**` 都会触发），在 Actions 里打包、签名、发布 Release。
+
+发新版前记得同时改两处，否则手机上会显示成同一个版本：
+
+- `android/app/build.gradle` 里的 `versionCode`（必须递增）和 `versionName`
+- 工作流里的 `tag_name`（想保留历史版本就改成新 tag）
+
+签名密钥库 `android/app/release.keystore` 已提交在仓库里（口令 `android`）。**不要换掉它**，否则新版无法覆盖安装旧版，用户得先卸载。
+
 ## 部署到 GitHub Pages
 
 线上地址：**https://fcdhy.github.io/invisible-ledger/**
@@ -150,12 +191,20 @@ fine-grained token 需要的权限（少一个都会 403，GitHub 会在 `x-acce
 │   ├── dictionary.js   # 隐形劳动词典：56 条 × 4 类
 │   ├── app.js          # 状态、分类器、周报聚合、图表（无依赖）
 │   └── icon.svg
+├── android/            # WebView 壳工程（Gradle）
+│   └── app/src/main/
+│       ├── AndroidManifest.xml
+│       ├── java/io/github/fcdhy/iledger/MainActivity.java   # WebView + 原生语音桥
+│       └── res/                                             # 应用名与图标
+├── .github/workflows/
+│   └── android-apk.yml # 云端打包：进 main 自动出 APK 并发布 Release
+├── deploy-github.js    # 建仓 + 推送 + 开 Pages 的一条龙脚本
 └── docs/               # 截图
 ```
 
 ## 已知边界
 
-- 语音输入依赖浏览器 `Web Speech API`（Chrome / Edge 支持最好，Safari 部分支持），不可用时请直接打字。
+- 语音输入：网页版依赖浏览器 `Web Speech API`（Chrome / Edge 支持最好，Safari 部分支持）；**APK 内改用系统 SpeechRecognizer**，因为 WebView 不支持 Web Speech API。都不可用时直接打字。
 - 分类器是**本地规则引擎**，不是大模型：命中词典关键词更准，完全口语化的长句可能识别不到。它是可替换的——`parseText()` 的输入输出边界很窄，接一个真实 LLM 只要保持同样的 JSON 结构即可。
 - 数据存在浏览器本地，清除站点数据会一并清除记录。
 - 「周报每周日 21:00 生成」为本地时间判断：页面在周日 21:00 后打开时会提示一次，不做后台推送（静态站点无服务器）。
