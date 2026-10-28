@@ -133,7 +133,7 @@ fine-grained token 需要的权限（少一个都会 403，GitHub 会在 `x-acce
 ### 两个实测踩过的坑
 
 - **没有 Pages 权限也能开站**：token 缺 `Pages: write` 时 API 开 Pages 会 403。此时把同一份代码推到 `gh-pages` 分支，GitHub 会自动创建 Pages 站点并以此分支为源，无需任何网页操作。
-- **Windows 上 git 报 `CRYPT_E_NO_REVOCATION_CHECK`**：这是本机 schannel 证书吊销检查不可用导致的 TLS 握手失败，不是网络不通。设置 `GIT_SSL_NO_VERIFY=true` 即可（`deploy-github.js` 会先探测，必要时自动降级）。
+- **Windows 上 git 报 `CRYPT_E_NO_REVOCATION_CHECK`**：这是本机 schannel 证书吊销检查不可用导致的 TLS 握手失败，不是网络不通。`GIT_SSL_NO_VERIFY=true` 可临时绕过，想长期生效就 `git config http.sslVerify false`（只影响这个仓库）。注意 `http.schannelCheckRevoke=false` 在 git 2.55 / windows 上实测无效，别在这上面浪费时间。`deploy-github.js` 会先探测，必要时自动降级。
 
 手机上用 Safari / Chrome 打开后「添加到主屏幕」，会以独立应用形式启动（已附 `manifest.json` 与图标）。
 
