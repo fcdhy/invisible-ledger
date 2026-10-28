@@ -104,7 +104,17 @@ npx serve .
 
 ## 部署到 GitHub Pages
 
-1. 把仓库推到 GitHub（`main` 分支）。
+### 方式一：一键脚本（建仓库 + 推送 + 开 Pages）
+
+```bash
+GH_TOKEN=github_pat_xxx node deploy-github.js
+```
+
+Token 需要 **Contents: Read and write** 与 **Administration: Read and write**（建仓库、开 Pages 用）。脚本不会把 token 写进 `.git/config`。
+
+### 方式二：手动
+
+1. 在 GitHub 网页新建仓库，把本地仓库推上去（`main` 分支）。
 2. Settings → Pages → Source 选 **Deploy from a branch** → `main` / `/ (root)`。
 3. 访问 `https://<用户名>.github.io/<仓库名>/`。
 
