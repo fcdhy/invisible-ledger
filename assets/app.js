@@ -703,8 +703,43 @@ ${off}
     $('#sheet').classList.remove('show');
   }
 
+  /* ---------------- 首次启动隐私同意 ---------------- */
+  const CONSENT_KEY = 'invisible-ledger.consent.v1';
+
+  function initConsent() {
+    const box = $('#consent');
+    if (!box) return;
+    let agreed = null;
+    try { agreed = localStorage.getItem(CONSENT_KEY); } catch (e) {}
+    if (agreed === 'agreed') { box.remove(); return; }
+
+    const card = box.querySelector('.consent-card');
+    const agreeBtn = $('#consentAgree');
+    const rejectBtn = $('#consentReject');
+    if (!card || !agreeBtn || !rejectBtn) { box.remove(); return; }
+
+    agreeBtn.addEventListener('click', () => {
+      try { localStorage.setItem(CONSENT_KEY, 'agreed'); } catch (e) {}
+      box.remove();
+    });
+
+    // 不同意：不退出、不索取，只说明后果，并允许重新阅读
+    rejectBtn.addEventListener('click', () => {
+      if (card.classList.contains('rejected')) {
+        card.classList.remove('rejected');
+        rejectBtn.textContent = '不同意';
+        agreeBtn.textContent = '同意并继续';
+      } else {
+        card.classList.add('rejected');
+        rejectBtn.textContent = '返回阅读';
+        agreeBtn.textContent = '查看并同意';
+      }
+    });
+  }
+
   /* ---------------- 初始化 ---------------- */
   function init() {
+    initConsent();
     load();
 
     $('#rateBtn').textContent = `¥${state.rate} / 时`;

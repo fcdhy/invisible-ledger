@@ -696,3 +696,94 @@ pre.json .n { color: #8E6820; }
 .sheet input:focus { border-color: #DFC0B1; }
 .sheet .row { display: flex; gap: 9px; }
 .sheet .row .field { flex: 1; }
+
+/* ---------------- 首次启动隐私提示 ---------------- */
+.consent {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(58, 40, 32, .42);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+.consent-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--cream);
+  border-radius: 22px 22px 0 0;
+  padding: 22px 20px calc(20px + env(safe-area-inset-bottom));
+  box-shadow: 0 -12px 40px rgba(103, 74, 55, .22);
+  animation: consentIn .32s cubic-bezier(.32, .72, .3, 1);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+@keyframes consentIn { from { transform: translateY(18px); opacity: 0; } to { transform: none; opacity: 1; } }
+.consent-mark {
+  width: 42px; height: 42px; border-radius: 13px;
+  background: var(--rose-soft);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.consent-card h2 {
+  margin: 0 0 8px;
+  font-size: 17px; font-weight: 600; color: var(--ink); letter-spacing: .01em;
+}
+.consent-lead {
+  margin: 0 0 13px; font-size: 12.5px; line-height: 1.72; color: var(--ink-2);
+}
+.consent-list {
+  margin: 0 0 13px; padding: 0; list-style: none;
+}
+.consent-list li {
+  position: relative;
+  padding: 9px 12px 9px 30px;
+  margin-bottom: 7px;
+  background: var(--paper);
+  border: 1px solid var(--line-2);
+  border-radius: 12px;
+  font-size: 11.5px; line-height: 1.65; color: var(--ink-2);
+}
+.consent-list li::before {
+  content: "";
+  position: absolute; left: 13px; top: 15px;
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--rose);
+}
+.consent-list b { color: var(--ink); font-weight: 600; }
+.consent-link {
+  margin: 0 0 15px; font-size: 11.5px; color: var(--muted);
+}
+.consent-link a {
+  color: var(--rose-deep); text-decoration: none;
+  border-bottom: 1px dashed #D9B7A8;
+}
+.consent-actions { display: flex; gap: 10px; }
+.consent-actions .btn { flex: 1; justify-content: center; padding: 12px 16px; font-size: 13.5px; }
+.btn-consent-ghost {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-weight: 400;
+  flex: 0 0 34%;
+}
+.btn-consent-ghost:active { background: #FBF4EF; }
+
+/* 拒绝后的提示态 */
+.consent-card.rejected .consent-list,
+.consent-card.rejected .consent-lead,
+.consent-card.rejected .consent-mark { display: none; }
+.consent-card.rejected .consent-note { display: block; }
+.consent-note {
+  display: none;
+  margin: 0 0 15px;
+  padding: 12px 13px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 12px; line-height: 1.7; color: var(--ink-2);
+}
+

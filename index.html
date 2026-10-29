@@ -201,6 +201,31 @@
   </nav>
 </div>
 
+<!-- 首次启动隐私提示 -->
+<div class="consent" id="consent" role="dialog" aria-modal="true" aria-labelledby="consentTitle">
+  <div class="consent-card">
+    <div class="consent-mark" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3.2 5 6v5.6c0 4.2 2.9 7.4 7 9.2 4.1-1.8 7-5 7-9.2V6l-7-2.8Z" stroke="#B4553F" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="m9.2 12.1 2 2 3.7-3.9" stroke="#B4553F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 id="consentTitle">隐私说明</h2>
+    <p class="consent-lead">隐形账本不需要登录、不联网、不收集你的任何信息。所有记录只保存在这台设备上。</p>
+    <p class="consent-note" id="consentNote">未同意时，我们不会处理任何信息，但应用无法保存你的记录，也无法使用语音输入。你可以随时点下方按钮重新阅读。</p>
+    <ul class="consent-list">
+      <li><b>麦克风</b>：仅在你点击「语音」时启用，把你说的话转成文字；不录音、不保存、不上传。</li>
+      <li><b>本机存储</b>：保存你的记录与折算设置，卸载或清除数据即一并删除。</li>
+      <li><b>无广告、无统计、无第三方 SDK。</b></li>
+    </ul>
+    <p class="consent-link">详见 <a href="privacy.html">《隐私政策》全文</a></p>
+    <div class="consent-actions">
+      <button class="btn btn-consent-ghost" id="consentReject" type="button">不同意</button>
+      <button class="btn btn-primary" id="consentAgree" type="button">同意并继续</button>
+    </div>
+  </div>
+</div>
+
 <!-- 设置弹层 -->
 <div class="sheet-mask" id="mask"></div>
 <div class="sheet" id="sheet">
